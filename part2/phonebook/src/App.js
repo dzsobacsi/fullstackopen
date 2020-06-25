@@ -13,11 +13,13 @@ const App = () => {
   const [ message,    setMessage ]   = useState(null)
   const [ success,    setSuccess ]   = useState(false)
 
+  const alphabeticSortOfNames = (a, b) => a.name < b.name ? -1 : 1
+
   useEffect(() => {
     //console.log('effect')
     pbService.getAll().then(response => {
       console.log('getAll fulfilled', response)
-      setPersons(response)
+      setPersons(response.sort(alphabeticSortOfNames))
     })
   }, [])
   //console.log(`render ${persons.length} notes`)
@@ -38,17 +40,26 @@ const App = () => {
 
     // ===================== A new item to add ==========================
     } else if(isNew) {
-        pbService.add(person).then(response => {
-          console.log('new item added ', response)
-          setPersons(persons.concat(response))
-          setNewName('')
-          setNewNumber('')
-          setSuccess(true)
-          setMessage(`Added ${response.name} `)
-          setTimeout(() => {
-            setMessage(null)
-          }, 2500)
-        })
+        pbService.add(person)
+          .then(response => {
+            console.log('new item added ', response)
+            setPersons(persons.concat(response).sort(alphabeticSortOfNames))
+            setNewName('')
+            setNewNumber('')
+            setSuccess(true)
+            setMessage(`Added ${response.name} `)
+            setTimeout(() => {
+              setMessage(null)
+            }, 2500)
+          })
+          .catch((error) => {
+            console.log(error.response.data)
+            setSuccess(false)
+            setMessage(error.response.data.error)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          })
 
     // ================== An existing item to update =====================
     } else {
@@ -56,17 +67,26 @@ const App = () => {
       if (confirmed) {
         console.log(`${person.name} will be updated...`)
         person.id = persons.find(p => p.name === person.name).id
-        pbService.update(person).then((response) => {
-          console.log('... to:', response)
-          setPersons(persons.map(p => p.id !== person.id ? p : response))
-          setNewName('')
-          setNewNumber('')
-          setSuccess(true)
-          setMessage(`Updated ${response.name} `)
-          setTimeout(() => {
-            setMessage(null)
-          }, 2500)
-        })
+        pbService.update(person)
+          .then((response) => {
+            console.log('... to:', response)
+            setPersons(persons.map(p => p.id !== person.id ? p : response))
+            setNewName('')
+            setNewNumber('')
+            setSuccess(true)
+            setMessage(`Updated ${response.name} `)
+            setTimeout(() => {
+              setMessage(null)
+            }, 2500)
+          })
+          .catch(error => {
+            console.log(error.response.data)
+            setSuccess(false)
+            setMessage(error.response.data.error)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          })
       }
     }
   }
