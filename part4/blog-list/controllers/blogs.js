@@ -16,27 +16,28 @@ blogsRouter.get('/:id', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
-  const blog = new Blog(request.body)
+  const body = request.body
+  const blog = new Blog(body)
   const addedBlog = await blog.save()
   response.status(201).json(addedBlog)
 })
 
-blogsRouter.put('/:id', (request, response, next) => {
+blogsRouter.put('/:id', async (request, response) => {
   const body = request.body
-
   const blog = {
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes
   }
+  const options = {
+    new: true,
+    runValidators: true,
+    context: 'query'
+  }
 
-  Blog
-    .findByIdAndUpdate(request.params.id, blog, { new: true })
-    .then(updatedBlog => {
-      response.json(updatedBlog)
-    })
-    .catch(error => next(error))
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, options)
+  response.status(200).json(updatedBlog)
 })
 
 blogsRouter.delete('/:id', async (request, response) => {

@@ -22,9 +22,15 @@ test('blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
-test('tere are two notes', async () => {
+test('tere are two blogs', async () => {
   const response = await api.get('/api/blogs')
   expect(response.body).toHaveLength(initialBlogs.length)
+})
+
+test('unique identfier is id', async () => {
+  const allblogs = await helper.blogsInDB()
+  const firstBlog = allblogs[0]
+  expect(firstBlog.id).toBeDefined()
 })
 
 test('there is a blog about react patterns', async () => {
@@ -52,6 +58,46 @@ test('a valid blog can be added', async () => {
   expect(titles).toContain('Test blog to add')
 })
 
+test('if likes is missing, it defaults to zero', async () => {
+  const newBlog = {
+    title: 'Anoter test blog to add',
+    author: 'Joe',
+    url: 'https://joe.com/blogs',
+  }
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+
+  const response = await api.get('/api/blogs')
+  const newlyAddedBlog = response.body.filter(b => b.title === newBlog.title)[0]
+  expect(newlyAddedBlog.likes).toEqual(0)
+})
+
+test('if title is missing, error 400 is returned', async () => {
+  const newBlog = {
+    author: 'Joel',
+    url: 'https://joe.com/blogs',
+    likes: 66
+  }
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+})
+
+test('if url is missing, error 400 is returned', async () => {
+  const newBlog = {
+    title: 'a blog without an url',
+    author: 'Joel',
+    likes: 66
+  }
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+})
+
 test('a specific blog can be viewed', async () => {
   const allblogs = await helper.blogsInDB()
   const firstBlog = allblogs[0]
@@ -74,6 +120,19 @@ test('a specific blog can be deleted', async () => {
   expect(blogsAfterDelete).toHaveLength(initialBlogs.length - 1)
   const contents = blogsAfterDelete.map(b => b.title)
   expect(contents).not.toContain(blogToDelete.title)
+})
+
+test('a specific blog can be updated', async () => {
+  const allblogs = await helper.blogsInDB()
+  const blogToUpdate = allblogs[0]
+  let newBlog = {...blogToUpdate}
+  newBlog.likes = 999
+  const response = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(newBlog)
+    .expect(200)
+
+  expect(response.body.likes).toEqual(999)
 })
 
 afterAll(() => {
