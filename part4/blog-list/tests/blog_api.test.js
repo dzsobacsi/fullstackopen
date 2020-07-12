@@ -5,14 +5,13 @@ const api = supertest(app)
 const Blog = require('../models/blog')
 const helper = require('./test_helper')
 
-const initialBlogs = helper.initialBlogs.slice(0, 2)
+const initialBlogs = helper.initialBlogs
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  let blogObject = new Blog(initialBlogs[0])
-  await blogObject.save()
-  blogObject = new Blog(initialBlogs[1])
-  await blogObject.save()
+  const blogObjects = initialBlogs.map(b => new Blog(b))
+  const promiseArray = blogObjects.map(b => b.save())
+  await Promise.all(promiseArray)
 })
 
 test('blogs are returned as json', async () => {
@@ -22,7 +21,7 @@ test('blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
-test('tere are two blogs', async () => {
+test('tere are as many blogs as listed in initialBlogs', async () => {
   const response = await api.get('/api/blogs')
   expect(response.body).toHaveLength(initialBlogs.length)
 })
