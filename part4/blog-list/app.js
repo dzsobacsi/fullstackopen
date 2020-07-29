@@ -13,7 +13,8 @@ const app = express()
 const mongooseOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useCreateIndex: true
+  useCreateIndex: true,
+  useFindAndModify: false,
 }
 
 const mongoUrl = config.MONGODB_URI
@@ -29,6 +30,7 @@ mongoose.connect(mongoUrl, mongooseOptions)
 app.use(cors())
 app.use(express.json())
 app.use(middleware.requestLogger)
+app.use(middleware.tokenExtractor)
 app.use('/api/blogs', blogsRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
