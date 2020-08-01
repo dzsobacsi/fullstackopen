@@ -1,5 +1,8 @@
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const supertest = require('supertest')
+const app = require('../app')
+const api = supertest(app)
 
 const initialBlogs = [
   {
@@ -72,9 +75,24 @@ const nonexistingID = async () => {
   return blog._id.toString()
 }
 
+const makeNewUser = async (user) => {
+  await User.deleteMany({})
+  const newUser = await api
+    .post('/api/users')
+    .send(user)
+
+  const loginResponse = await api
+    .post('/api/login')
+    .send({ username: user.username, password: user.password })
+    .expect(200)
+
+  return { newUser: newUser.body, token: loginResponse.body.token }
+}
+
 module.exports = {
   initialBlogs,
   blogsInDB,
   usersInDB,
-  nonexistingID
+  nonexistingID,
+  makeNewUser,
 }

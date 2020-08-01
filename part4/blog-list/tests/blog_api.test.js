@@ -3,13 +3,26 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('./test_helper')
 
 const initialBlogs = helper.initialBlogs
+const newUser = { username: 'tester', password: 'isitstrongenough' }
+let token = ''
+let testUser = {}
+
+beforeAll(async () => {
+  const response = await helper.makeNewUser(newUser)
+  token = response.token
+  testUser = response.newUser
+  //console.log('new testUser: ', testUser)
+})
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  const blogObjects = initialBlogs.map(b => new Blog(b))
+  const blogObjects = initialBlogs
+    //.map(b => ({ ...b, user: testUser.id }))
+    .map(b => new Blog(b))
   const promiseArray = blogObjects.map(b => b.save())
   await Promise.all(promiseArray)
 })
@@ -75,6 +88,7 @@ describe('when there is initially some blogs saved', () => {
       }
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -93,6 +107,7 @@ describe('when there is initially some blogs saved', () => {
       }
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(201)
 
@@ -109,6 +124,7 @@ describe('when there is initially some blogs saved', () => {
       }
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(400)
     })
@@ -121,22 +137,51 @@ describe('when there is initially some blogs saved', () => {
       }
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(400)
+    })
+
+    test('if token is missing, error 401 is returned', async () => {
+      const newBlog = {
+        title: 'Test blog to add',
+        author: 'Jackson from Jackwille',
+        url: 'https://jackson.com/blogs',
+        likes: 2
+      }
+      await api
+        .post('/api/blogs')
+        .set('Authorization', '')
+        .send(newBlog)
+        .expect(401)
     })
   })
 
 
   describe('delete of a blog', () => {
     test('a specific blog can be deleted', async () => {
+      await Blog.deleteMany({})
+      const newBlog = {
+        title: 'Test blog to add',
+        author: 'Jackson from Jackwille',
+        url: 'https://jackson.com/blogs',
+        likes: 2
+      }
+      await api
+        .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
+        .send(newBlog)
+        .expect(201)
       const allblogs = await helper.blogsInDB()
       const blogToDelete = allblogs[0]
+      console.log('blog to delete: ', blogToDelete)
       const response = await api
         .delete(`/api/blogs/${blogToDelete.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(204)
 
       const blogsAfterDelete = await helper.blogsInDB()
-      expect(blogsAfterDelete).toHaveLength(initialBlogs.length - 1)
+      expect(blogsAfterDelete).toHaveLength(0)
       const contents = blogsAfterDelete.map(b => b.title)
       expect(contents).not.toContain(blogToDelete.title)
     })
