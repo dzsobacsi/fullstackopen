@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import LoginForm from './components/LoginForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -10,13 +11,15 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
 
-
+  // get all the blogs from the server once before the page loads
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     )
   }, [])
 
+  // check if logged user info is saved to localStorage once before the page
+  // loads.
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
@@ -51,7 +54,7 @@ const App = () => {
     setUser(null)
   }
 
-  const loginForm = () => (
+  /*const loginForm = () => (
     <div>
       <h2>Log in to application</h2>
       <form onSubmit={handleLogin}>
@@ -75,8 +78,9 @@ const App = () => {
         <button type="submit">login</button>
       </form>
     </div>
-  )
+  )*/
 
+  // Conditional page layout based on logged in user
   return (
     <div>
       { user ?
@@ -92,7 +96,14 @@ const App = () => {
             )}
           </div>
         )
-        : loginForm()
+        :
+        <LoginForm
+          handleLogin={handleLogin}
+          username={username}
+          password={password}
+          setUsername={setUsername}
+          setPassword={setPassword}
+        />
       }
     </div>
   )
