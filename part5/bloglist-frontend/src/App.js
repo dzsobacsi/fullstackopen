@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
+import AddBlogForm from './components/AddBlogForm'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -10,6 +12,10 @@ const App = () => {
   const [password, setPassword] = useState([])
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
+  const [success, setSuccess] = useState(false)
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
   // get all the blogs from the server once before the page loads
   useEffect(() => {
@@ -25,7 +31,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-      //blogService.setToken(user.token)
+      blogService.setToken(user.token)
     }
   }, [])
 
@@ -34,17 +40,21 @@ const App = () => {
     console.log('login attempt: ', username, password)
     try {
       const user = await loginService.login({ username, password })
+      blogService.setToken(user.token)
       window.localStorage.setItem(
         'loggedAppUser', JSON.stringify(user)
       )
       setUser(user)
       setUsername('')
       setPassword('')
+      setErrorMessage('Successful login')
+      setSuccess(true)
+      setTimeout(() => { setErrorMessage(null) }, 3000)
     } catch (exception) {
+      console.log('exception: ', exception)
       setErrorMessage('Wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      setSuccess(false)
+      setTimeout(() => { setErrorMessage(null) }, 3000)
     }
   }
 
@@ -54,31 +64,25 @@ const App = () => {
     setUser(null)
   }
 
-  /*const loginForm = () => (
-    <div>
-      <h2>Log in to application</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-            <input
-              type="text"
-              value={username}
-              name="Username"
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          <br/>
-          password
-            <input
-              type="password"
-              value={password}
-              name="Password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-        </div>
-        <button type="submit">login</button>
-      </form>
-    </div>
-  )*/
+  const handleAddBlog = async (event) => {
+    event.preventDefault()
+    const newBlogToAdd = { title, author, url }
+    try {
+      const newlyAddedBlog = await blogService.addNewBlog(newBlogToAdd)
+      setBlogs(blogs.concat(newlyAddedBlog))
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      setErrorMessage(`a new blog ${title} by ${author} added`)
+      setSuccess(true)
+      setTimeout(() => { setErrorMessage(null) }, 3000)
+    } catch (exception) {
+      setErrorMessage(`Error: could not create new blog entry - Title and Url are mandatory`)
+      setSuccess(false)
+      setTimeout(() => { setErrorMessage(null) }, 5000)
+      console.log(exception)
+    }
+  }
 
   // Conditional page layout based on logged in user
   return (
@@ -87,10 +91,20 @@ const App = () => {
         (
           <div>
             <h2>blogs</h2>
+            <Notification message={errorMessage} success={success}/>
             <p>
               {user.name} logged in
               <button onClick={handleLogout}>logout</button>
             </p>
+            <AddBlogForm
+              handleAddBlog={handleAddBlog}
+              title={title}
+              author={author}
+              url={url}
+              setTitle={setTitle}
+              setAuthor={setAuthor}
+              setUrl={setUrl}
+            />
             {blogs.map(blog =>
               <Blog key={blog.id} blog={blog} />
             )}
@@ -103,6 +117,8 @@ const App = () => {
           password={password}
           setUsername={setUsername}
           setPassword={setPassword}
+          errorMessage={errorMessage}
+          success={success}
         />
       }
     </div>
