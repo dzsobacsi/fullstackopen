@@ -9,8 +9,6 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState([])
-  const [password, setPassword] = useState([])
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [success, setSuccess] = useState(false)
@@ -33,8 +31,7 @@ const App = () => {
     }
   }, [])
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
+  const handleLogin = async ({ username, password }) => {
     console.log('login attempt: ', username, password)
     try {
       const user = await loginService.login({ username, password })
@@ -43,8 +40,6 @@ const App = () => {
         'loggedAppUser', JSON.stringify(user)
       )
       setUser(user)
-      setUsername('')
-      setPassword('')
       setErrorMessage('Successful login')
       setSuccess(true)
       setTimeout(() => { setErrorMessage(null) }, 3000)
@@ -83,10 +78,6 @@ const App = () => {
       { user===null ?
         <LoginForm
           handleLogin={handleLogin}
-          username={username}
-          password={password}
-          setUsername={setUsername}
-          setPassword={setPassword}
           errorMessage={errorMessage}
           success={success}
         />
@@ -108,7 +99,6 @@ const App = () => {
             )}
           </div>
         )
-
       }
     </div>
   )
