@@ -14,9 +14,6 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [success, setSuccess] = useState(false)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
 
   // get all the blogs from the server once before the page loads
   useEffect(() => {
@@ -65,16 +62,11 @@ const App = () => {
     setUser(null)
   }
 
-  const handleAddBlog = async (event) => {
-    event.preventDefault()
-    const newBlogToAdd = { title, author, url }
+  const handleAddBlog = async (newBlogToAdd) => {
     try {
       const newlyAddedBlog = await blogService.addNewBlog(newBlogToAdd)
       setBlogs(blogs.concat(newlyAddedBlog))
-      setTitle('')
-      setAuthor('')
-      setUrl('')
-      setErrorMessage(`a new blog ${title} by ${author} added`)
+      setErrorMessage(`a new blog ${newBlogToAdd.title} by ${newBlogToAdd.author} added`)
       setSuccess(true)
       setTimeout(() => { setErrorMessage(null) }, 3000)
     } catch (exception) {
@@ -108,15 +100,7 @@ const App = () => {
               <button onClick={handleLogout}>logout</button>
             </p>
             <Togglable buttonLabel='create new'>
-              <AddBlogForm
-                handleAddBlog={handleAddBlog}
-                title={title}
-                author={author}
-                url={url}
-                setTitle={setTitle}
-                setAuthor={setAuthor}
-                setUrl={setUrl}
-              />
+              <AddBlogForm handleAddBlog={handleAddBlog} />
             </Togglable>
             <br/>
             {blogs.map(blog =>
