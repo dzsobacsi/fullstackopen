@@ -31,7 +31,6 @@ const AddBlogForm = ({ handleAddBlog, title, setTitle, author, setAuthor, url, s
       </div>
       <button type="submit">add</button>
     </form>
-    <br/>
   </div>
 )
 
