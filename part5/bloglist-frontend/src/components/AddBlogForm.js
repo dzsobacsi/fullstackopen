@@ -13,7 +13,6 @@ const AddBlogForm = ({ handleAddBlog }) => {
       setAuthor('')
       setUrl('')
     }
-
   }
 
   return (
