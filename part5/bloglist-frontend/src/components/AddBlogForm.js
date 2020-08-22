@@ -8,9 +8,12 @@ const AddBlogForm = ({ handleAddBlog }) => {
   const addBlog = (event) => {
     event.preventDefault()
     handleAddBlog({ title, author, url })
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    if (title && url) {
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+    }
+
   }
 
   return (

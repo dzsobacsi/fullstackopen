@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import AddBlogForm from './components/AddBlogForm'
@@ -10,8 +10,10 @@ import loginService from './services/login'
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [message, setMessage] = useState(null)
   const [success, setSuccess] = useState(false)
+
+  const blogFormRef = useRef()
 
   // get all the blogs from the server once before the page loads
   useEffect(() => {
@@ -40,14 +42,14 @@ const App = () => {
         'loggedAppUser', JSON.stringify(user)
       )
       setUser(user)
-      setErrorMessage('Successful login')
+      setMessage('Successful login')
       setSuccess(true)
-      setTimeout(() => { setErrorMessage(null) }, 3000)
+      setTimeout(() => { setMessage(null) }, 3000)
     } catch (exception) {
       console.log('exception: ', exception)
-      setErrorMessage('Wrong credentials')
+      setMessage('Wrong credentials')
       setSuccess(false)
-      setTimeout(() => { setErrorMessage(null) }, 3000)
+      setTimeout(() => { setMessage(null) }, 3000)
     }
   }
 
@@ -60,14 +62,15 @@ const App = () => {
   const handleAddBlog = async (newBlogToAdd) => {
     try {
       const newlyAddedBlog = await blogService.addNewBlog(newBlogToAdd)
+      blogFormRef.current.toggleVisibility()
       setBlogs(blogs.concat(newlyAddedBlog))
-      setErrorMessage(`a new blog ${newBlogToAdd.title} by ${newBlogToAdd.author} added`)
+      setMessage(`a new blog ${newBlogToAdd.title} by ${newBlogToAdd.author} added`)
       setSuccess(true)
-      setTimeout(() => { setErrorMessage(null) }, 3000)
+      setTimeout(() => { setMessage(null) }, 3000)
     } catch (exception) {
-      setErrorMessage(`Error: could not create new blog entry - Title and Url are mandatory`)
+      setMessage(`Error: could not create new blog entry - Title and Url are mandatory`)
       setSuccess(false)
-      setTimeout(() => { setErrorMessage(null) }, 5000)
+      setTimeout(() => { setMessage(null) }, 5000)
       console.log(exception)
     }
   }
@@ -78,27 +81,25 @@ const App = () => {
       { user===null ?
         <LoginForm
           handleLogin={handleLogin}
-          errorMessage={errorMessage}
+          message={message}
           success={success}
         />
         :
-        (
-          <div>
-            <h2>blogs</h2>
-            <Notification message={errorMessage} success={success}/>
-            <p>
-              {user.name} logged in
-              <button onClick={handleLogout}>logout</button>
-            </p>
-            <Togglable buttonLabel='create new'>
-              <AddBlogForm handleAddBlog={handleAddBlog} />
-            </Togglable>
-            <br/>
-            {blogs.map(blog =>
-              <Blog key={blog.id} blog={blog} />
-            )}
-          </div>
-        )
+        <div>
+          <h2>blogs</h2>
+          <Notification message={message} success={success}/>
+          <p>
+            {user.name} logged in
+            <button onClick={handleLogout}>logout</button>
+          </p>
+          <Togglable buttonLabel='create new' ref={blogFormRef}>
+            <AddBlogForm handleAddBlog={handleAddBlog} />
+          </Togglable>
+          <br/>
+          {blogs.map(blog =>
+            <Blog key={blog.id} blog={blog} />
+          )}
+        </div>
       }
     </div>
   )
