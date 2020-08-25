@@ -14,11 +14,12 @@ const App = () => {
   const [success, setSuccess] = useState(false)
 
   const blogFormRef = useRef()
+  const compare = (a, b) => b.likes - a.likes
 
   // get all the blogs from the server once before the page loads
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs(blogs)
     )
   }, [])
 
@@ -71,7 +72,24 @@ const App = () => {
       setMessage(`Error: could not create new blog entry - Title and Url are mandatory`)
       setSuccess(false)
       setTimeout(() => { setMessage(null) }, 5000)
-      console.log(exception)
+      console.error(exception)
+    }
+  }
+
+  const handleLike = async (blogToUpdate) => {
+    try {
+      blogToUpdate.likes ++
+      const updatedBlog = await blogService.addLike(blogToUpdate)
+      setBlogs(
+        blogs
+          .filter(b => b.id !== blogToUpdate.id)
+          .concat(updatedBlog)
+      )
+    } catch (exception) {
+      setMessage(`Error: could not add like`)
+      setSuccess(false)
+      setTimeout(() => { setMessage(null) }, 5000)
+      console.error(exception)
     }
   }
 
@@ -96,8 +114,8 @@ const App = () => {
             <AddBlogForm handleAddBlog={handleAddBlog} />
           </Togglable>
           <br/>
-          {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+          {blogs.sort(compare).map(blog =>
+            <Blog key={blog.id} blog={blog} handleLike={handleLike}/>
           )}
         </div>
       }

@@ -21,4 +21,10 @@ const addNewBlog = newBlog => {
   return request.then(response => response.data)
 }
 
-export default { getAll, addNewBlog, setToken }
+const addLike = blog => {
+  const url = baseUrl + "/" + blog.id
+  const request = axios.put(url, blog)
+  return request.then(response => response.data)
+}
+
+export default { getAll, addNewBlog, setToken, addLike }

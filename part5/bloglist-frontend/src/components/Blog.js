@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleLike }) => {
   const [showDetails, setShowDetails] = useState(false)
 
   const toggleDetails = () => {
@@ -8,7 +8,7 @@ const Blog = ({ blog }) => {
   }
 
   const addLike = () => {
-    //pass
+    handleLike(blog)
   }
 
   const blogStyle = {
