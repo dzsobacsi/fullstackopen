@@ -18,9 +18,7 @@ const App = () => {
 
   // get all the blogs from the server once before the page loads
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    blogService.getAll().then(blogs => setBlogs(blogs))
   }, [])
 
   // check if logged user info is saved to localStorage once before the page
@@ -78,7 +76,6 @@ const App = () => {
 
   const handleLike = async (blogToUpdate) => {
     try {
-      blogToUpdate.likes ++
       const updatedBlog = await blogService.addLike(blogToUpdate)
       setBlogs(
         blogs

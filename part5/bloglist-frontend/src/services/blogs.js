@@ -23,7 +23,10 @@ const addNewBlog = newBlog => {
 
 const addLike = blog => {
   const url = baseUrl + "/" + blog.id
-  const request = axios.put(url, blog)
+  let body = { ...blog }
+  delete body.id
+  body.user = blog.user.id
+  const request = axios.put(url, body)
   return request.then(response => response.data)
 }
 

@@ -8,7 +8,9 @@ const Blog = ({ blog, handleLike }) => {
   }
 
   const addLike = () => {
-    handleLike(blog)
+    let likedBlog = { ...blog }
+    likedBlog.likes++
+    handleLike(likedBlog)
   }
 
   const blogStyle = {
