@@ -21,6 +21,15 @@ const addNewBlog = newBlog => {
   return request.then(response => response.data)
 }
 
+const removeBlog = blog => {
+  const config = {
+    headers: { Authorization: token }
+  }
+  const url = baseUrl + "/" + blog.id
+  const request = axios.delete(url, config)
+  return request.then(response => response.data)
+}
+
 const addLike = blog => {
   const url = baseUrl + "/" + blog.id
   let body = { ...blog }
@@ -30,4 +39,4 @@ const addLike = blog => {
   return request.then(response => response.data)
 }
 
-export default { getAll, addNewBlog, setToken, addLike }
+export default { getAll, addNewBlog, removeBlog, setToken, addLike }

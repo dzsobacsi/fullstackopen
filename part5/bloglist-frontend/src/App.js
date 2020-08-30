@@ -74,6 +74,21 @@ const App = () => {
     }
   }
 
+  const handleRemoveBlog = async (blogToRemove) => {
+    try {
+      await blogService.removeBlog(blogToRemove)
+      setBlogs(blogs.filter(b => b.id !== blogToRemove.id))
+      setMessage(`the blog ${blogToRemove.title} by ${blogToRemove.author} is removed`)
+      setSuccess(true)
+      setTimeout(() => { setMessage(null) }, 3000)
+    } catch (exception) {
+      setMessage(`Error: could not remove the blog`)
+      setSuccess(false)
+      setTimeout(() => { setMessage(null) }, 5000)
+      console.error(exception)
+    }
+  }
+
   const handleLike = async (blogToUpdate) => {
     try {
       const updatedBlog = await blogService.addLike(blogToUpdate)
@@ -112,7 +127,13 @@ const App = () => {
           </Togglable>
           <br/>
           {blogs.sort(compare).map(blog =>
-            <Blog key={blog.id} blog={blog} handleLike={handleLike}/>
+            <Blog
+              key={blog.id}
+              blog={blog}
+              handleLike={handleLike}
+              handleRemoveBlog={handleRemoveBlog}
+              user={user}
+            />
           )}
         </div>
       }
