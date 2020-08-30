@@ -33,7 +33,6 @@ const App = () => {
   }, [])
 
   const handleLogin = async ({ username, password }) => {
-    console.log('login attempt: ', username, password)
     try {
       const user = await loginService.login({ username, password })
       blogService.setToken(user.token)
@@ -52,7 +51,7 @@ const App = () => {
     }
   }
 
-  const handleLogout = event => {
+  const handleLogout = () => {
     window.localStorage.removeItem('loggedAppUser')
     console.log(`${user.username} logged out`)
     setUser(null)
@@ -67,7 +66,7 @@ const App = () => {
       setSuccess(true)
       setTimeout(() => { setMessage(null) }, 3000)
     } catch (exception) {
-      setMessage(`Error: could not create new blog entry - Title and Url are mandatory`)
+      setMessage('Error: could not create new blog entry - Title and Url are mandatory')
       setSuccess(false)
       setTimeout(() => { setMessage(null) }, 5000)
       console.error(exception)
@@ -82,7 +81,7 @@ const App = () => {
       setSuccess(true)
       setTimeout(() => { setMessage(null) }, 3000)
     } catch (exception) {
-      setMessage(`Error: could not remove the blog`)
+      setMessage('Error: could not remove the blog')
       setSuccess(false)
       setTimeout(() => { setMessage(null) }, 5000)
       console.error(exception)
@@ -98,7 +97,7 @@ const App = () => {
           .concat(updatedBlog)
       )
     } catch (exception) {
-      setMessage(`Error: could not add like`)
+      setMessage('Error: could not add like')
       setSuccess(false)
       setTimeout(() => { setMessage(null) }, 5000)
       console.error(exception)

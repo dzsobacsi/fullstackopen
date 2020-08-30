@@ -1,6 +1,12 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 const Notification = ({ message, success }) => {
+  Notification.propTypes = {
+    message: PropTypes.string,
+    success: PropTypes.bool.isRequired
+  }
+
   const style = {
     background: 'lightgray',
     borderStyle: 'solid',
