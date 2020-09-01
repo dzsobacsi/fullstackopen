@@ -118,7 +118,7 @@ const App = () => {
           <h2>blogs</h2>
           <Notification message={message} success={success}/>
           <p>
-            {user.name} logged in
+            {user.name} logged in &nbsp;
             <button onClick={handleLogout}>logout</button>
           </p>
           <Togglable buttonLabel='create new' ref={blogFormRef}>

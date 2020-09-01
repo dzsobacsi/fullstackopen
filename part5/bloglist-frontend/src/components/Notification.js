@@ -21,7 +21,7 @@ const Notification = ({ message, success }) => {
   if (message === null) return null
 
   return (
-    <div style={style}>
+    <div id="message" style={style}>
       {message}
     </div>
   )

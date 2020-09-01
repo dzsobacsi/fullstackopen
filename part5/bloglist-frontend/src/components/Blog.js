@@ -44,12 +44,12 @@ const Blog = ({ blog, handleLike, handleRemoveBlog, user }) => {
   return(
     <div>
       { showDetails === false ?
-        <div style={blogStyle}>
+        <div className="blog-short" style={blogStyle}>
           {blog.title} &nbsp; {blog.author} &nbsp;
           <button onClick={toggleDetails}>view</button>
         </div>
         :
-        <div style={blogStyle}>
+        <div className="blog-detailed" style={blogStyle}>
           {blog.title} &nbsp;
           <button onClick={toggleDetails}>hide</button><br/>
           {blog.author}<br/>
