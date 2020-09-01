@@ -16,8 +16,10 @@ const Blog = ({ blog, handleLike, handleRemoveBlog, user }) => {
   }
 
   const addLike = () => {
-    let likedBlog = { ...blog }
-    likedBlog.likes++
+    const likedBlog = {
+      ...blog,
+      likes: blog.likes + 1
+    }
     handleLike(likedBlog)
   }
 
