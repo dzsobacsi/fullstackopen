@@ -5,6 +5,7 @@ import { setMessage, resetMessage } from '../reducers/messageReducer'
 
 const AnecdoteList = (props) => {
   const anecdotes = useSelector(state => state.anecdotes)
+  const search = useSelector(state => state.filter)
   const dispatch = useDispatch()
 
   const handleVote = (anecdote) => {
@@ -15,8 +16,11 @@ const AnecdoteList = (props) => {
 
   return (
     <div>
-      <div style={{height: 50}}></div>
-      {anecdotes.sort((a, b) => b.votes - a.votes).map(anecdote =>
+      <div style={{height: 25}}></div>
+      {anecdotes
+        .filter(a => a.content.toLowerCase().includes(search.toLowerCase()))
+        .sort((a, b) => b.votes - a.votes)
+        .map(anecdote =>
         <div key={anecdote.id}>
           <div>
             {anecdote.content}
