@@ -1,7 +1,7 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { vote } from '../reducers/anecdoteReducer'
-import { setMessage, resetMessage } from '../reducers/messageReducer'
+import { setMessage } from '../reducers/messageReducer'
 
 const AnecdoteList = (props) => {
   const anecdotes = useSelector(state => state.anecdotes)
@@ -10,8 +10,8 @@ const AnecdoteList = (props) => {
 
   const handleVote = (anecdote) => {
     dispatch(vote(anecdote.id))
-    dispatch(setMessage(`You voted "${anecdote.content}"`))
-    setTimeout(() => dispatch(resetMessage()), 5000)
+    dispatch(setMessage(`You voted "${anecdote.content}"`, 4))
+    //setTimeout(() => dispatch(resetMessage()), 5000)
   }
 
   return (

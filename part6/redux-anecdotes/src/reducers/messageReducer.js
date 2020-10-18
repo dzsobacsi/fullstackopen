@@ -1,6 +1,4 @@
 const messageReducer = (state = null, action) => {
-  // console.log('state now: ', state)
-  // console.log('action: ', action)
 
   switch (action.type) {
     case 'SET_MESSAGE':
@@ -12,16 +10,15 @@ const messageReducer = (state = null, action) => {
   }
 }
 
-export const setMessage = message => {
-  return {
-    type: 'SET_MESSAGE',
-    message
-  }
-}
-
-export const resetMessage = () => {
-  return {
-    type: 'RESET_MESSAGE'
+export const setMessage = (message, timeInSeconds) => {
+  return async dispatch => {
+    dispatch({
+      type: 'SET_MESSAGE',
+      message
+    })
+    setTimeout(() => dispatch({
+      type: 'RESET_MESSAGE'
+    }), timeInSeconds * 1000)
   }
 }
 
