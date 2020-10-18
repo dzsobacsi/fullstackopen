@@ -11,7 +11,7 @@ const messageReducer = (state = null, action) => {
 }
 
 export const setMessage = (message, timeInSeconds) => {
-  return async dispatch => {
+  return dispatch => {
     dispatch({
       type: 'SET_MESSAGE',
       message

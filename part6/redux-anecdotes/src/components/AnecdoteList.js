@@ -11,7 +11,6 @@ const AnecdoteList = (props) => {
   const handleVote = (anecdote) => {
     dispatch(vote(anecdote.id))
     dispatch(setMessage(`You voted "${anecdote.content}"`, 4))
-    //setTimeout(() => dispatch(resetMessage()), 5000)
   }
 
   return (
