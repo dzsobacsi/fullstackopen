@@ -1,5 +1,4 @@
 const messageReducer = (state = null, action) => {
-
   switch (action.type) {
     case 'SET_MESSAGE':
       return action.message
@@ -10,13 +9,16 @@ const messageReducer = (state = null, action) => {
   }
 }
 
+let timeoutID
+
 export const setMessage = (message, timeInSeconds) => {
   return dispatch => {
+    clearTimeout(timeoutID)
     dispatch({
       type: 'SET_MESSAGE',
       message
     })
-    setTimeout(() => dispatch({
+    timeoutID = setTimeout(() => dispatch({
       type: 'RESET_MESSAGE'
     }), timeInSeconds * 1000)
   }
