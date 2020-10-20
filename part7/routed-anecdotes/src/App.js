@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Switch, Route, Link, useRouteMatch } from "react-router-dom"
+import { Switch, Route, Link, useRouteMatch, useHistory } from "react-router-dom"
 
 const Menu = () => {
   const padding = {
@@ -54,6 +54,7 @@ const CreateNew = (props) => {
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
 
+  const history = useHistory()
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -63,6 +64,7 @@ const CreateNew = (props) => {
       info,
       votes: 0
     })
+    history.push('/')
   }
 
   return (
@@ -87,15 +89,13 @@ const CreateNew = (props) => {
   )
 }
 
-const Anecdote = ({ anecdote }) => {
-  return (
-    <div>
-      <h2>{anecdote.content} by {anecdote.author}</h2>
-      <p>has {anecdote.votes} votes</p>
-      <p>For more info see <a href={anecdote.info}>{anecdote.info}</a></p>
-    </div>
-  )
-}
+const Anecdote = ({ anecdote }) => (
+  <div>
+    <h2>{anecdote.content} by {anecdote.author}</h2>
+    <p>has {anecdote.votes} votes</p>
+    <p>For more info see <a href={anecdote.info}>{anecdote.info}</a></p>
+  </div>
+)
 
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([
@@ -165,4 +165,4 @@ const App = () => {
   )
 }
 
-export default App;
+export default App
