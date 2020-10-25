@@ -1,0 +1,151 @@
+import React, { useState, useEffect, useRef } from 'react'
+import Blog from './components/Blog'
+import LoginForm from './components/LoginForm'
+import AddBlogForm from './components/AddBlogForm'
+import Notification from './components/Notification'
+import Togglable from './components/Togglable'
+import blogService from './services/blogs'
+import loginService from './services/login'
+
+import { useDispatch, useSelector } from 'react-redux'
+import { setMessage } from './reducers/messageReducer'
+
+const App = () => {
+  const [blogs, setBlogs] = useState([])
+  const [user, setUser] = useState(null)
+  //const [message, setMessage] = useState(null)
+  const [success, setSuccess] = useState(false)
+
+  const dispatch = useDispatch()
+  const message = useSelector(state => state.message)
+
+  const blogFormRef = useRef()
+  const compare = (a, b) => b.likes - a.likes
+
+  // get all the blogs from the server once before the page loads
+  useEffect(() => {
+    blogService.getAll().then(blogs => setBlogs(blogs))
+  }, [])
+
+  // check if logged user info is saved to localStorage once before the page
+  // loads.
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
+    }
+  }, [])
+
+  const handleLogin = async ({ username, password }) => {
+    try {
+      const user = await loginService.login({ username, password })
+      blogService.setToken(user.token)
+      window.localStorage.setItem(
+        'loggedAppUser', JSON.stringify(user)
+      )
+      setUser(user)
+      setSuccess(true)
+      dispatch(setMessage('Successful login', 3))
+    } catch (exception) {
+      console.log('exception: ', exception)
+      setSuccess(false)
+      dispatch(setMessage('Wrong credentials', 3))
+    }
+  }
+
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedAppUser')
+    console.log(`${user.username} logged out`)
+    setUser(null)
+  }
+
+  const handleAddBlog = async (newBlogToAdd) => {
+    try {
+      const newlyAddedBlog = await blogService.addNewBlog(newBlogToAdd)
+      blogFormRef.current.toggleVisibility()
+      setBlogs(blogs.concat(newlyAddedBlog))
+      setSuccess(true)
+      dispatch(setMessage(
+        `a new blog ${newBlogToAdd.title} by ${newBlogToAdd.author} added`,
+        3
+      ))
+    } catch (exception) {
+      setSuccess(false)
+      dispatch(setMessage(
+        'Error: could not create new blog entry - Title and Url are mandatory',
+        5
+      ))
+      console.error(exception)
+    }
+  }
+
+  const handleRemoveBlog = async (blogToRemove) => {
+    try {
+      await blogService.removeBlog(blogToRemove)
+      setBlogs(blogs.filter(b => b.id !== blogToRemove.id))
+      setSuccess(true)
+      dispatch(setMessage(
+        `the blog ${blogToRemove.title} by ${blogToRemove.author} is removed`,
+        3
+      ))
+    } catch (exception) {
+      setSuccess(false)
+      dispatch(setMessage('Error: could not remove the blog', 5))
+      console.error(exception)
+    }
+  }
+
+  const handleLike = async (blogToUpdate) => {
+    try {
+      const updatedBlog = await blogService.addLike(blogToUpdate)
+      setBlogs(
+        blogs
+          .filter(b => b.id !== blogToUpdate.id)
+          .concat(updatedBlog)
+      )
+    } catch (exception) {
+      setSuccess(false)
+      dispatch(setMessage('Error: could not add like', 5))
+      console.error(exception)
+    }
+  }
+
+  // Conditional page layout based on logged in user
+  return (
+    <div>
+      { user===null ?
+        <LoginForm
+          handleLogin={handleLogin}
+          message={message}
+          success={success}
+        />
+        :
+        <div>
+          <h2>blogs</h2>
+          <Notification message={message} success={success}/>
+          <p>
+            {user.name} logged in &nbsp;
+            <button onClick={handleLogout}>logout</button>
+          </p>
+          <Togglable buttonLabel='create new' ref={blogFormRef}>
+            <AddBlogForm handleAddBlog={handleAddBlog} />
+          </Togglable>
+          <br/>
+          {blogs.sort(compare).map(blog =>
+            <Blog
+              key={blog.id}
+              blog={blog}
+              handleLike={handleLike}
+              handleRemoveBlog={handleRemoveBlog}
+              user={user}
+            />
+          )}
+        </div>
+      }
+    </div>
+  )
+}
+
+export default App
