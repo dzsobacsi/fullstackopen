@@ -1,9 +1,17 @@
-const messageReducer = (state = null, action) => {
+const initialState = {
+  message: null,
+  success: false
+}
+
+const messageReducer = (state = initialState, action) => {
   switch (action.type) {
   case 'SET_MESSAGE':
-    return action.message
+    return {
+      message: action.message,
+      success: action.success
+    }
   case 'RESET_MESSAGE':
-    return null
+    return initialState
   default:
     return state
   }
@@ -11,12 +19,13 @@ const messageReducer = (state = null, action) => {
 
 let timeoutID
 
-export const setMessage = (message, timeInSeconds) => {
+export const setMessage = (message, success, timeInSeconds) => {
   return dispatch => {
     clearTimeout(timeoutID)
     dispatch({
       type: 'SET_MESSAGE',
-      message
+      message,
+      success
     })
     timeoutID = setTimeout(() => dispatch({
       type: 'RESET_MESSAGE'

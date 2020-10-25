@@ -9,23 +9,23 @@ import loginService from './services/login'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { setMessage } from './reducers/messageReducer'
+import { initializeBlogs, addNew, deleteBlog, likeBlog } from './reducers/blogReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  //const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  //const [message, setMessage] = useState(null)
-  const [success, setSuccess] = useState(false)
 
   const dispatch = useDispatch()
-  const message = useSelector(state => state.message)
+  const { message, success } = useSelector(state => state.message)
+  const blogs = useSelector(state => state.blogs)
 
   const blogFormRef = useRef()
   const compare = (a, b) => b.likes - a.likes
 
   // get all the blogs from the server once before the page loads
   useEffect(() => {
-    blogService.getAll().then(blogs => setBlogs(blogs))
-  }, [])
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
   // check if logged user info is saved to localStorage once before the page
   // loads.
@@ -46,12 +46,10 @@ const App = () => {
         'loggedAppUser', JSON.stringify(user)
       )
       setUser(user)
-      setSuccess(true)
-      dispatch(setMessage('Successful login', 3))
+      dispatch(setMessage('Successful login', true, 3))
     } catch (exception) {
       console.log('exception: ', exception)
-      setSuccess(false)
-      dispatch(setMessage('Wrong credentials', 3))
+      dispatch(setMessage('Wrong credentials', false, 3))
     }
   }
 
@@ -63,18 +61,17 @@ const App = () => {
 
   const handleAddBlog = async (newBlogToAdd) => {
     try {
-      const newlyAddedBlog = await blogService.addNewBlog(newBlogToAdd)
       blogFormRef.current.toggleVisibility()
-      setBlogs(blogs.concat(newlyAddedBlog))
-      setSuccess(true)
+      dispatch(addNew(newBlogToAdd))
       dispatch(setMessage(
         `a new blog ${newBlogToAdd.title} by ${newBlogToAdd.author} added`,
+        true,
         3
       ))
     } catch (exception) {
-      setSuccess(false)
       dispatch(setMessage(
         'Error: could not create new blog entry - Title and Url are mandatory',
+        false,
         5
       ))
       console.error(exception)
@@ -83,31 +80,23 @@ const App = () => {
 
   const handleRemoveBlog = async (blogToRemove) => {
     try {
-      await blogService.removeBlog(blogToRemove)
-      setBlogs(blogs.filter(b => b.id !== blogToRemove.id))
-      setSuccess(true)
+      dispatch(deleteBlog(blogToRemove))
       dispatch(setMessage(
         `the blog ${blogToRemove.title} by ${blogToRemove.author} is removed`,
+        true,
         3
       ))
     } catch (exception) {
-      setSuccess(false)
-      dispatch(setMessage('Error: could not remove the blog', 5))
+      dispatch(setMessage('Error: could not remove the blog', false, 5))
       console.error(exception)
     }
   }
 
   const handleLike = async (blogToUpdate) => {
     try {
-      const updatedBlog = await blogService.addLike(blogToUpdate)
-      setBlogs(
-        blogs
-          .filter(b => b.id !== blogToUpdate.id)
-          .concat(updatedBlog)
-      )
+      dispatch(likeBlog(blogToUpdate))
     } catch (exception) {
-      setSuccess(false)
-      dispatch(setMessage('Error: could not add like', 5))
+      dispatch(setMessage('Error: could not add like', false, 5))
       console.error(exception)
     }
   }
