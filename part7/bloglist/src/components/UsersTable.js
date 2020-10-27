@@ -1,14 +1,12 @@
-import React from 'react'
-import User from './User'
+import React, { useState, useEffect } from 'react'
+import userService from '../services/users'
+import UsersTableRow from './UsersTableRow'
 
-const UsersTable = ({ blogs }) => {
-  let nrOfBlogsPerUser = {}
-  blogs
-    .map(b => b.user.name)
-    .forEach(n => {
-      nrOfBlogsPerUser[n] = nrOfBlogsPerUser[n] ? nrOfBlogsPerUser[n] + 1 : 1
-    })
-  //console.log(nrOfBlogsPerUser)
+const UsersTable = () => {
+  const [users, setUsers] = useState([])
+  useEffect(() => {
+    userService.getAll().then(res => setUsers(res))
+  }, [])
 
   return (
     <table>
@@ -19,9 +17,12 @@ const UsersTable = ({ blogs }) => {
         </tr>
       </thead>
       <tbody>
-        {Object
-          .keys(nrOfBlogsPerUser)
-          .map((n, i) => <User key={i} name={n} nrBlogs={nrOfBlogsPerUser[n]} />)
+        {users.map((u, i) =>
+          <UsersTableRow
+            key={i}
+            name={u.name}
+            nrBlogs={u.blogs.length}
+          />)
         }
       </tbody>
     </table>

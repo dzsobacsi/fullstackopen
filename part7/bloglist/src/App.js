@@ -108,9 +108,13 @@ const App = () => {
             <button onClick={handleLogout}>logout</button>
           </p>
           <Switch>
+            <Route path='/users/:id'>
+              individual user view
+              {/*<User blogs={blogs} />*/}
+            </Route>
             <Route path='/users'>
               <h2>Users</h2>
-              <UsersTable blogs={blogs} />
+              <UsersTable />
             </Route>
             <Route path='/'>
               <Togglable buttonLabel='create new' ref={blogFormRef}>
