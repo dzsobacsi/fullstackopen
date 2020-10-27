@@ -1,13 +1,7 @@
-import React, { useState, useEffect } from 'react'
-import userService from '../services/users'
+import React from 'react'
 import UsersTableRow from './UsersTableRow'
 
-const UsersTable = () => {
-  const [users, setUsers] = useState([])
-  useEffect(() => {
-    userService.getAll().then(res => setUsers(res))
-  }, [])
-
+const UsersTable = ({ users }) => {
   return (
     <table>
       <thead>
@@ -21,6 +15,7 @@ const UsersTable = () => {
           <UsersTableRow
             key={i}
             name={u.name}
+            id={u.id}
             nrBlogs={u.blogs.length}
           />)
         }

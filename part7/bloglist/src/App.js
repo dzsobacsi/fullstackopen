@@ -1,11 +1,13 @@
-import React, { useEffect, useRef } from 'react'
-import { Switch, Route } from 'react-router-dom'
+import React, { useState, useEffect, useRef } from 'react'
+import { Switch, Route, useRouteMatch } from 'react-router-dom'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import AddBlogForm from './components/AddBlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import UsersTable from './components/UsersTable'
+import User from './components/User'
+import userService from './services/users'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { setMessage } from './reducers/messageReducer'
@@ -16,7 +18,7 @@ const App = () => {
   const dispatch = useDispatch()
   const { message, success } = useSelector(state => state.message)
   const blogs = useSelector(state => state.blogs)
-  const user = useSelector(state => state.user)
+  const loggedUser = useSelector(state => state.user)
 
   const blogFormRef = useRef()
   const compare = (a, b) => b.likes - a.likes
@@ -35,6 +37,17 @@ const App = () => {
       dispatch(setUser(user))
     }
   }, [])
+
+  // get all users from the database
+  const [users, setUsers] = useState([])
+  useEffect(() => {
+    userService.getAll().then(res => setUsers(res))
+  }, [])
+
+  const match = useRouteMatch('/users/:id')
+  const clickedUser = match
+    ? users.find(u => u.id === match.params.id)
+    : null
 
   const handleLogin = async ({ username, password }) => {
     try {
@@ -93,7 +106,7 @@ const App = () => {
   // Conditional page layout based on logged in user
   return (
     <div>
-      { user===null ?
+      { loggedUser===null ?
         <LoginForm
           handleLogin={handleLogin}
           message={message}
@@ -104,17 +117,16 @@ const App = () => {
           <h2>blogs</h2>
           <Notification message={message} success={success}/>
           <p>
-            {user.name} logged in &nbsp;
+            {loggedUser.name} logged in &nbsp;
             <button onClick={handleLogout}>logout</button>
           </p>
           <Switch>
             <Route path='/users/:id'>
-              individual user view
-              {/*<User blogs={blogs} />*/}
+              <User user={clickedUser} />
             </Route>
             <Route path='/users'>
               <h2>Users</h2>
-              <UsersTable />
+              <UsersTable users={users} />
             </Route>
             <Route path='/'>
               <Togglable buttonLabel='create new' ref={blogFormRef}>
@@ -127,7 +139,7 @@ const App = () => {
                   blog={blog}
                   handleLike={handleLike}
                   handleRemoveBlog={handleRemoveBlog}
-                  user={user}
+                  user={loggedUser}
                 />
               )}
             </Route>
