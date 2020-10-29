@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Switch, Route, useRouteMatch } from 'react-router-dom'
+import BlogList from './components/BlogList'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import AddBlogForm from './components/AddBlogForm'
@@ -21,7 +22,6 @@ const App = () => {
   const loggedUser = useSelector(state => state.user)
 
   const blogFormRef = useRef()
-  const compare = (a, b) => b.likes - a.likes
 
   // get all the blogs from the server once before the page loads
   useEffect(() => {
@@ -44,9 +44,14 @@ const App = () => {
     userService.getAll().then(res => setUsers(res))
   }, [])
 
-  const match = useRouteMatch('/users/:id')
-  const clickedUser = match
-    ? users.find(u => u.id === match.params.id)
+  const matchUser = useRouteMatch('/users/:id')
+  const clickedUser = matchUser
+    ? users.find(u => u.id === matchUser.params.id)
+    : null
+
+  const matchBlog = useRouteMatch('/blogs/:id')
+  const clickedBlog = matchBlog
+    ? blogs.find(b => b.id === matchBlog.params.id)
     : null
 
   const handleLogin = async ({ username, password }) => {
@@ -128,20 +133,20 @@ const App = () => {
               <h2>Users</h2>
               <UsersTable users={users} />
             </Route>
+            <Route path='/blogs/:id'>
+              <Blog
+                blog={clickedBlog}
+                handleLike={handleLike}
+                handleRemoveBlog={handleRemoveBlog}
+                user={loggedUser}
+              />
+            </Route>
             <Route path='/'>
               <Togglable buttonLabel='create new' ref={blogFormRef}>
                 <AddBlogForm handleAddBlog={handleAddBlog} />
               </Togglable>
               <br/>
-              {blogs.sort(compare).map(blog =>
-                <Blog
-                  key={blog.id}
-                  blog={blog}
-                  handleLike={handleLike}
-                  handleRemoveBlog={handleRemoveBlog}
-                  user={loggedUser}
-                />
-              )}
+              <BlogList blogs={blogs} />
             </Route>
           </Switch>
         </div>
