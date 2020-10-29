@@ -4,6 +4,7 @@ import BlogList from './components/BlogList'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import AddBlogForm from './components/AddBlogForm'
+import NavMenu from './components/NavMenu'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import UsersTable from './components/UsersTable'
@@ -119,12 +120,9 @@ const App = () => {
         />
         :
         <div>
-          <h2>blogs</h2>
           <Notification message={message} success={success}/>
-          <p>
-            {loggedUser.name} logged in &nbsp;
-            <button onClick={handleLogout}>logout</button>
-          </p>
+          <NavMenu loggedUser={loggedUser} handleLogout={handleLogout} />
+          <h1>blog app</h1>
           <Switch>
             <Route path='/users/:id'>
               <User user={clickedUser} />
