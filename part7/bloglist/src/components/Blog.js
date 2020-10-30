@@ -2,10 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const Blog = ({ blog, handleLike, handleRemoveBlog, user }) => {
-  // if(!blog) {
-  //   console.log('no blog')
-  //   return null
-  // }
+  if(!blog) {
+    console.log('no blog')
+    return null
+  }
 
   Blog.propTypes = {
     //blog: PropTypes.object.isRequired,
@@ -44,6 +44,11 @@ const Blog = ({ blog, handleLike, handleRemoveBlog, user }) => {
         <button style={removeButtonStyle} onClick={remove}>
           remove
         </button>
+      }
+      <h2>comments</h2>
+      {blog.comments.length
+        ? <ul>{blog.comments.map((c, i) => <li key={i}>{c.content}</li>)}</ul>
+        : <span>there are no comments</span>
       }
     </div>
   )
