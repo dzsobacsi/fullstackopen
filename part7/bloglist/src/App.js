@@ -120,7 +120,7 @@ const App = () => {
 
   // Conditional page layout based on logged in user
   return (
-    <div>
+    <div className="container">
       { loggedUser===null ?
         <LoginForm
           handleLogin={handleLogin}
