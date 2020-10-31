@@ -39,4 +39,10 @@ const addLike = blog => {
   return request.then(response => response.data)
 }
 
-export default { getAll, addNewBlog, removeBlog, setToken, addLike }
+const addComment = (blog, comment) => {
+  const url = `${baseUrl}/${blog.id}/comments`
+  const request = axios.post(url, comment)
+  return request.then(response => response.data)
+}
+
+export default { getAll, addNewBlog, removeBlog, setToken, addLike, addComment }

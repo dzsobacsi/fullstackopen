@@ -13,7 +13,7 @@ import userService from './services/users'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { setMessage } from './reducers/messageReducer'
-import { initializeBlogs, addNew, deleteBlog, likeBlog } from './reducers/blogReducer'
+import { initializeBlogs, addNew, deleteBlog, likeBlog, commentBlog } from './reducers/blogReducer'
 import { setUser, login, logout } from './reducers/userReducer'
 
 const App = () => {
@@ -86,6 +86,15 @@ const App = () => {
     }
   }
 
+  const handleCommentBlog = async (blog, comment) => {
+    try {
+      dispatch(commentBlog(blog, comment))
+    } catch (e) {
+      dispatch(setMessage('Could not add comment', false, 5))
+      console.error(e)
+    }
+  }
+
   const handleRemoveBlog = async (blogToRemove) => {
     try {
       dispatch(deleteBlog(blogToRemove))
@@ -136,6 +145,7 @@ const App = () => {
                 blog={clickedBlog}
                 handleLike={handleLike}
                 handleRemoveBlog={handleRemoveBlog}
+                handleCommentBlog={handleCommentBlog}
                 user={loggedUser}
               />
             </Route>

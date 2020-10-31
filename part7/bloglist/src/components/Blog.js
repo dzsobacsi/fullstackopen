@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import CommentForm from './CommentForm'
 
-const Blog = ({ blog, handleLike, handleRemoveBlog, user }) => {
+const Blog = ({ blog, handleLike, handleCommentBlog, handleRemoveBlog, user }) => {
   if(!blog) {
     console.log('no blog')
     return null
@@ -46,6 +47,7 @@ const Blog = ({ blog, handleLike, handleRemoveBlog, user }) => {
         </button>
       }
       <h2>comments</h2>
+      <CommentForm blog={blog} handleCommentBlog={handleCommentBlog} />
       {blog.comments.length
         ? <ul>{blog.comments.map((c, i) => <li key={i}>{c.content}</li>)}</ul>
         : <span>there are no comments</span>

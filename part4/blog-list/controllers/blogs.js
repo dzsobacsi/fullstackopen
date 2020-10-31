@@ -63,10 +63,11 @@ blogsRouter.post('/:id/comments', async (request, response) => {
   blog.comments = blog.comments.concat(addedComment._id)
   await blog.save()
 
-  const returnedComment = await Comment
-    .findById(addedComment._id)
-    .populate('blog', { title: 1 })
-  response.status(201).json(returnedComment)
+  const returnedBlog = await Blog
+    .findById(request.params.id)
+    .populate('user', { name: 1, username: 1 })
+    .populate('comments', { content: 1 })
+  response.status(201).json(returnedBlog)
 })
 
 blogsRouter.put('/:id', async (request, response) => {
