@@ -1,4 +1,5 @@
 import React from 'react'
+import { Form, Button } from 'react-bootstrap'
 import { useDispatch } from 'react-redux'
 import { commentBlog } from '../reducers/blogReducer'
 
@@ -13,10 +14,10 @@ const CommentForm = ({ blog }) => {
   }
 
   return (
-    <form id="comment-form" onSubmit={addComment}>
-      <input type="text" name="comment" />
-      <button type="submit">add comment</button>
-    </form>
+    <Form id="comment-form" onSubmit={addComment}>
+      <Form.Control type="text" name="comment" />
+      <Button type="submit">add comment</Button>
+    </Form>
   )
 }
 

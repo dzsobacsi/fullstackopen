@@ -1,19 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Switch, Route, useRouteMatch } from 'react-router-dom'
-import BlogList from './components/BlogList'
-import Blog from './components/Blog'
-import LoginForm from './components/LoginForm'
-import AddBlogForm from './components/AddBlogForm'
-import NavMenu from './components/NavMenu'
+import { useDispatch, useSelector }           from 'react-redux'
+import { Switch, Route, useRouteMatch }       from 'react-router-dom'
+import AddBlogForm  from './components/AddBlogForm'
+import Blog         from './components/Blog'
+import BlogList     from './components/BlogList'
+import LoginForm    from './components/LoginForm'
+import NavMenu      from './components/NavMenu'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
-import UsersTable from './components/UsersTable'
-import User from './components/User'
-import userService from './services/users'
-
-import { useDispatch, useSelector } from 'react-redux'
-import { initializeBlogs, addNew } from './reducers/blogReducer'
-import { setUser } from './reducers/userReducer'
+import Togglable    from './components/Togglable'
+import User         from './components/User'
+import UsersTable   from './components/UsersTable'
+import userService  from './services/users'
+import { initializeBlogs, addNew }  from './reducers/blogReducer'
+import { setUser }                  from './reducers/userReducer'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -63,7 +62,6 @@ const App = () => {
         <div>
           <NavMenu loggedUser={loggedUser} />
           <Notification message={message} success={success} />
-          <h1>blog app</h1>
           <Switch>
             <Route path='/users/:id'>
               <User user={clickedUser} />
@@ -76,6 +74,8 @@ const App = () => {
               <Blog blog={clickedBlog} user={loggedUser} />
             </Route>
             <Route path='/'>
+              <br/>
+              <BlogList blogs={blogs} />
               <Togglable buttonLabel='create new' ref={blogFormRef}>
                 <AddBlogForm
                   handleAddBlog={
@@ -85,8 +85,6 @@ const App = () => {
                   }
                 />
               </Togglable>
-              <br/>
-              <BlogList blogs={blogs} />
             </Route>
           </Switch>
         </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Form, Button, Col, Row } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 
 const AddBlogForm = ({ handleAddBlog }) => {
@@ -23,37 +24,45 @@ const AddBlogForm = ({ handleAddBlog }) => {
   return (
     <div>
       <h2>create new</h2>
-      <form onSubmit={addBlog}>
-        <div>
-          title
-          <input
-            id="title"
-            type="text"
-            value={title}
-            name="Title"
-            onChange={({ target }) => setTitle(target.value)}
-          />
-          <br/>
-          author
-          <input
-            id="author"
-            type="text"
-            value={author}
-            name="Author"
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-          <br/>
-          url
-          <input
-            id="url"
-            type="text"
-            value={url}
-            name="Author"
-            onChange={({ target }) => setUrl(target.value)}
-          />
-        </div>
-        <button type="submit">add</button>
-      </form>
+      <Form onSubmit={addBlog}>
+        <Form.Group as={Row}>
+          <Form.Label column sm={1}>title</Form.Label>
+          <Col sm={4}>
+            <Form.Control
+              id="title"
+              type="text"
+              value={title}
+              name="Title"
+              onChange={({ target }) => setTitle(target.value)}
+            />
+          </Col>
+        </Form.Group>
+        <Form.Group as={Row}>
+          <Form.Label column sm={1}>author</Form.Label>
+          <Col sm={4}>
+            <Form.Control
+              id="author"
+              type="text"
+              value={author}
+              name="Author"
+              onChange={({ target }) => setAuthor(target.value)}
+            />
+          </Col>
+        </Form.Group>
+        <Form.Group as={Row}>
+          <Form.Label column sm={1}>url</Form.Label>
+          <Col sm={4}>
+            <Form.Control
+              id="url"
+              type="text"
+              value={url}
+              name="Url"
+              onChange={({ target }) => setUrl(target.value)}
+            />
+          </Col>
+        </Form.Group>
+        <Button type="submit">add</Button>
+      </Form>
     </div>
   )
 }
