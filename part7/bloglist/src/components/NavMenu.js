@@ -1,7 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { logout } from '../reducers/userReducer'
 
-const NavMenu = ({ loggedUser, handleLogout }) => {
+const NavMenu = ({ loggedUser }) => {
+  const dispatch = useDispatch()
   const padding = {
     padding: 5
   }
@@ -18,7 +21,7 @@ const NavMenu = ({ loggedUser, handleLogout }) => {
       <Link style={padding} to='/'>blogs</Link>
       <Link style={padding} to='/users'>users</Link>
       {loggedUser.name} logged in &nbsp;
-      <button onClick={handleLogout}>logout</button>
+      <button onClick={() => dispatch(logout())}>logout</button>
     </div>
   )
 }

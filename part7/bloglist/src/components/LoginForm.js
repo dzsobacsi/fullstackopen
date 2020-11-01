@@ -3,9 +3,13 @@ import { Form, Button, Col } from 'react-bootstrap'
 import Notification from './Notification'
 import PropTypes from 'prop-types'
 
-const LoginForm = ({ handleLogin, message, success }) => {
+import { useDispatch } from 'react-redux'
+import { login } from '../reducers/userReducer'
+
+const LoginForm = ({ message, success }) => {
   const [username, setUsername] = useState([])
   const [password, setPassword] = useState([])
+  const dispatch = useDispatch()
 
   LoginForm.propTypes = {
     handleLogin: PropTypes.func.isRequired,
@@ -13,9 +17,9 @@ const LoginForm = ({ handleLogin, message, success }) => {
     success: PropTypes.bool.isRequired
   }
 
-  const login = (event) => {
+  const handleLogin = (event) => {
     event.preventDefault()
-    handleLogin({ username, password })
+    dispatch(login({ username, password }))
     setUsername('')
     setPassword('')
   }
@@ -25,7 +29,7 @@ const LoginForm = ({ handleLogin, message, success }) => {
       <br/>
       <h2>Login</h2>
       <Notification message={message} success={success}/>
-      <Form onSubmit={login}>
+      <Form onSubmit={handleLogin}>
         <Form.Row>
           <Col xs={5}>
             <Form.Label>username</Form.Label>

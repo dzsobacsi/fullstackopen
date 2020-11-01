@@ -1,5 +1,6 @@
 import loginService from '../services/login'
 import blogService from '../services/blogs'
+import { setMessage } from './messageReducer'
 
 const userReducer = (state = null, action) => {
   switch (action.type) {
@@ -22,15 +23,21 @@ export const setUser = user => {
 
 export const login = ({ username, password }) => {
   return async dispatch => {
-    const user = await loginService.login({ username, password })
-    blogService.setToken(user.token)
-    window.localStorage.setItem(
-      'loggedAppUser', JSON.stringify(user)
-    )
-    dispatch({
-      type: 'SET_USER',
-      user
-    })
+    try {
+      const user = await loginService.login({ username, password })
+      blogService.setToken(user.token)
+      window.localStorage.setItem(
+        'loggedAppUser', JSON.stringify(user)
+      )
+      dispatch({
+        type: 'SET_USER',
+        user
+      })
+      dispatch(setMessage('Successful login', true, 3))
+    } catch (e) {
+      console.error('exception: ', e)
+      dispatch(setMessage('Wrong credentials', false, 5))
+    }
   }
 }
 

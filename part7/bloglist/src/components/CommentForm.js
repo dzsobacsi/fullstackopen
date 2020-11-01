@@ -1,10 +1,14 @@
 import React from 'react'
+import { useDispatch } from 'react-redux'
+import { commentBlog } from '../reducers/blogReducer'
 
-const CommentForm = ({ blog, handleCommentBlog }) => {
+const CommentForm = ({ blog }) => {
+  const dispatch = useDispatch()
+
   const addComment = e => {
     e.preventDefault()
     const comment = { content: e.target.comment.value }
-    handleCommentBlog(blog, comment)
+    dispatch(commentBlog(blog, comment))
     document.getElementById('comment-form').reset()
   }
 

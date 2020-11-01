@@ -2,7 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import CommentForm from './CommentForm'
 
-const Blog = ({ blog, handleLike, handleCommentBlog, handleRemoveBlog, user }) => {
+import { useDispatch } from 'react-redux'
+import { likeBlog, deleteBlog } from '../reducers/blogReducer'
+import { useHistory } from 'react-router-dom'
+
+const Blog = ({ blog, user }) => {
+  const dispatch = useDispatch()
+  const history = useHistory()
+
   if(!blog) {
     console.log('no blog')
     return null
@@ -10,8 +17,6 @@ const Blog = ({ blog, handleLike, handleCommentBlog, handleRemoveBlog, user }) =
 
   Blog.propTypes = {
     //blog: PropTypes.object.isRequired,
-    handleLike: PropTypes.func.isRequired,
-    handleRemoveBlog: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired
   }
 
@@ -20,12 +25,13 @@ const Blog = ({ blog, handleLike, handleCommentBlog, handleRemoveBlog, user }) =
       ...blog,
       likes: blog.likes + 1
     }
-    handleLike(likedBlog)
+    dispatch(likeBlog(likedBlog))
   }
 
   const remove = () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      handleRemoveBlog(blog)
+      dispatch(deleteBlog(blog))
+      history.push('/')
     }
   }
 
@@ -47,7 +53,7 @@ const Blog = ({ blog, handleLike, handleCommentBlog, handleRemoveBlog, user }) =
         </button>
       }
       <h2>comments</h2>
-      <CommentForm blog={blog} handleCommentBlog={handleCommentBlog} />
+      <CommentForm blog={blog} />
       {blog.comments.length
         ? <ul>{blog.comments.map((c, i) => <li key={i}>{c.content}</li>)}</ul>
         : <span>there are no comments</span>
