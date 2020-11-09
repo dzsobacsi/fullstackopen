@@ -25,7 +25,11 @@ const EditAuthor = ({ authors }) => {
           {authors.map((a, i) => <option key={i} value={a.name}>{a.name}</option>)}
         </select><br/>
         born
-        <input onChange={({ target }) => setBirthYear(target.value)} /><br/>
+        <input
+          type="number"
+          onChange={({ target }) => setBirthYear(parseInt(target.value))}
+        />
+        <br/>
         <button type="submit">udate author</button>
       </form>
     </div>

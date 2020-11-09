@@ -5,7 +5,7 @@ import { ALL_BOOKS, ALL_AUTHORS, ADD_BOOK } from '../queries'
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
   const [author, setAuhtor] = useState('')
-  const [published, setPublished] = useState(null)
+  const [published, setPublished] = useState('')
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
@@ -24,7 +24,7 @@ const NewBook = (props) => {
     addBook({ variables: { title, author, published, genres } })
 
     setTitle('')
-    setPublished(null)
+    setPublished('')
     setAuhtor('')
     setGenres([])
     setGenre('')
@@ -57,7 +57,7 @@ const NewBook = (props) => {
           <input
             type='number'
             value={published}
-            onChange={({ target }) => setPublished(target.value)}
+            onChange={({ target }) => setPublished(parseInt(target.value))}
           />
         </div>
         <div>
