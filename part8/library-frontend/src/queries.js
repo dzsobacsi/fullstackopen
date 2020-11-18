@@ -14,14 +14,14 @@ export const ALL_BOOKS = gql`
   query {
     allBooks {
       title
-      author
+      author { name }
       published
     }
   }
 `
 
 export const ADD_BOOK = gql`
-  mutation createBook($title: String!, $author: String!, $published: Int, $genres: [String]) {
+  mutation createBook($title: String!, $author: String!, $published: Int!, $genres: [String!]!) {
     addBook(
       title: $title,
       author: $author,
@@ -29,7 +29,7 @@ export const ADD_BOOK = gql`
       genres: $genres
     ) {
       title,
-      author,
+      author { name, born },
       published,
       genres
     }
